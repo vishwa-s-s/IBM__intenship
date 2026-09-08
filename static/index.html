@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Learning & Study Assistant</title>
+    <!-- Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div class="brand-text">
+                    <h2>StudyMind AI</h2>
+                    <span>AI Learning Assistant</span>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-item active" data-tab="tab-rag">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>RAG & Study Chat</span>
+                </button>
+                <button class="nav-item" data-tab="tab-plan">
+                    <i class="fa-solid fa-route"></i>
+                    <span>Learning Plan</span>
+                </button>
+                <button class="nav-item" data-tab="tab-quiz">
+                    <i class="fa-solid fa-vial-circle-check"></i>
+                    <span>Quiz Arena</span>
+                </button>
+                <button class="nav-item" data-tab="tab-analytics">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Memory & Stats</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="voice-picker">
+                    <label for="voice-select"><i class="fa-solid fa-volume-high"></i> AI Tutor Voice:</label>
+                    <select id="voice-select">
+                        <option value="21m00Tcm4TlvDq8ikWAM">Rachel (Clear)</option>
+                    </select>
+                </div>
+                <div class="status-indicator">
+                    <span class="status-dot online"></span> RAG Memory System Active
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Workspace View -->
+        <main class="content-area">
+            <!-- TAB 1: RAG & STUDY CHAT -->
+            <section id="tab-rag" class="tab-page active">
+                <header class="page-header">
+                    <div>
+                        <h1><i class="fa-solid fa-brain"></i> RAG Grounded Study Assistant</h1>
+                        <p>Ask questions grounded directly in your uploaded textbooks, notes, and study slides.</p>
+                    </div>
+                </header>
+
+                <div class="rag-layout">
+                    <!-- Left: Knowledge Base Uploader -->
+                    <div class="glass-card knowledge-panel">
+                        <h3><i class="fa-solid fa-folder-plus"></i> Knowledge Base</h3>
+                        
+                        <!-- Upload Tabs -->
+                        <div class="ingest-tabs">
+                            <button class="ingest-tab active" data-mode="pdf">PDF File</button>
+                            <button class="ingest-tab" data-mode="url">Web URL</button>
+                            <button class="ingest-tab" data-mode="text">Raw Text</button>
+                        </div>
+
+                        <!-- Ingest PDF Form -->
+                        <div id="ingest-pdf" class="ingest-form active">
+                            <div class="file-dropzone" id="pdf-dropzone">
+                                <i class="fa-solid fa-cloud-arrow-up drop-icon"></i>
+                                <p>Drag & Drop Study PDF or <span class="browse-link">Browse</span></p>
+                                <input type="file" id="pdf-file-input" accept=".pdf" hidden>
+                            </div>
+                            <button id="upload-pdf-btn" class="btn btn-primary btn-block" disabled>
+                                <i class="fa-solid fa-upload"></i> Upload & Index PDF
+                            </button>
+                        </div>
+
+                        <!-- Ingest URL Form -->
+                        <div id="ingest-url" class="ingest-form">
+                            <input type="url" id="url-input" class="input-field" placeholder="https://example.com/lecture-notes">
+                            <input type="text" id="url-title-input" class="input-field" placeholder="Material Title (Optional)">
+                            <button id="upload-url-btn" class="btn btn-primary btn-block">
+                                <i class="fa-solid fa-globe"></i> Scrape & Index URL
+                            </button>
+                        </div>
+
+                        <!-- Ingest Text Form -->
+                        <div id="ingest-text" class="ingest-form">
+                            <input type="text" id="text-title-input" class="input-field" placeholder="Topic or Note Title">
+                            <textarea id="text-content-input" class="textarea-field" placeholder="Paste lecture notes or textbook excerpt here..."></textarea>
+                            <button id="upload-text-btn" class="btn btn-primary btn-block">
+                                <i class="fa-solid fa-file-import"></i> Index Notes
+                            </button>
+                        </div>
+
+                        <hr class="divider">
+
+                        <h4><i class="fa-solid fa-layer-group"></i> Indexed Materials (<span id="doc-count">0</span>)</h4>
+                        <div id="materials-list" class="materials-list">
+                            <p class="empty-msg">No study documents added yet.</p>
+                        </div>
+                    </div>
+
+                    <!-- Right: Interactive Q&A Chat Window -->
+                    <div class="glass-card chat-panel">
+                        <div class="chat-header">
+                            <h3><i class="fa-solid fa-comments"></i> RAG Grounded Chat</h3>
+                            <button id="clear-chat-btn" class="btn btn-secondary btn-sm"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+                        </div>
+                        <div id="chat-messages" class="chat-messages">
+                            <div class="message assistant">
+                                <div class="avatar"><i class="fa-solid fa-robot"></i></div>
+                                <div class="bubble">
+                                    Hello! I am your AI Learning Assistant. Upload your study notes or ask me any question to get clear, step-by-step explanations grounded in your course materials.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-input-wrapper">
+                            <textarea id="chat-input" placeholder="Ask anything about your study materials (e.g. Explain Neural Networks in simple terms)..."></textarea>
+                            <button id="send-chat-btn" class="btn btn-primary btn-icon">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: LEARNING PLAN BUILDER -->
+            <section id="tab-plan" class="tab-page">
+                <header class="page-header">
+                    <div>
+                        <h1><i class="fa-solid fa-compass-drafting"></i> Personalized Study Plan Generator</h1>
+                        <p>Generate structured, step-by-step learning roadmaps tailored to your deadline and pacing.</p>
+                    </div>
+                </header>
+
+                <div class="plan-layout">
+                    <div class="glass-card plan-form-card">
+                        <h3><i class="fa-solid fa-sliders"></i> Plan Configuration</h3>
+                        <form id="plan-form">
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-bullseye"></i> Goal / Subject / Exam</label>
+                                <input type="text" id="plan-goal" class="input-field" placeholder="e.g. Master Machine Learning Fundamentals" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label><i class="fa-solid fa-calendar"></i> Target Duration</label>
+                                    <select id="plan-duration" class="input-field">
+                                        <option value="2 Weeks">2 Weeks Sprint</option>
+                                        <option value="4 Weeks" selected>4 Weeks (1 Month)</option>
+                                        <option value="8 Weeks">8 Weeks Semester</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fa-solid fa-clock"></i> Daily Time</label>
+                                    <select id="plan-time" class="input-field">
+                                        <option value="30 Mins / Day">30 Mins / Day</option>
+                                        <option value="1 Hour / Day" selected>1 Hour / Day</option>
+                                        <option value="2 Hours / Day">2 Hours / Day</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-chart-simple"></i> Current Level</label>
+                                <select id="plan-level" class="input-field">
+                                    <option value="Beginner">Beginner (Starting from Scratch)</option>
+                                    <option value="Intermediate">Intermediate (Basic Foundation)</option>
+                                    <option value="Advanced">Advanced (Exam Review & Optimization)</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Structured Plan
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="glass-card plan-result-card" id="plan-result-panel">
+                        <div class="plan-placeholder">
+                            <i class="fa-solid fa-route placeholder-icon"></i>
+                            <p>Configure your goal on the left and click "Generate Structured Plan" to view your step-by-step study roadmap.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: QUIZ ARENA -->
+            <section id="tab-quiz" class="tab-page">
+                <header class="page-header">
+                    <div>
+                        <h1><i class="fa-solid fa-flask"></i> Interactive Quiz Arena</h1>
+                        <p>Generate practice questions, assess your knowledge, and track instantaneous feedback.</p>
+                    </div>
+                </header>
+
+                <div class="quiz-layout">
+                    <!-- Quiz Config Bar -->
+                    <div class="glass-card quiz-config-card">
+                        <div class="quiz-controls">
+                            <div class="control-item">
+                                <label>Topic:</label>
+                                <input type="text" id="quiz-topic" class="input-field" placeholder="e.g. Data Structures, Cell Biology">
+                            </div>
+                            <div class="control-item">
+                                <label>Format:</label>
+                                <select id="quiz-format" class="input-field">
+                                    <option value="mcq">Multiple Choice (MCQ)</option>
+                                    <option value="flashcard">Flashcards Review</option>
+                                </select>
+                            </div>
+                            <div class="control-item">
+                                <label>Questions:</label>
+                                <select id="quiz-num" class="input-field">
+                                    <option value="3">3 Questions</option>
+                                    <option value="5" selected>5 Questions</option>
+                                    <option value="10">10 Questions</option>
+                                </select>
+                            </div>
+                            <button id="generate-quiz-btn" class="btn btn-primary">
+                                <i class="fa-solid fa-play"></i> Launch Quiz
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Active Quiz Display Area -->
+                    <div class="glass-card quiz-container" id="quiz-display-area">
+                        <div class="quiz-placeholder">
+                            <i class="fa-solid fa-lightbulb placeholder-icon"></i>
+                            <h3>Ready to Test Your Comprehension?</h3>
+                            <p>Select a topic above or launch a quiz based on your indexed course materials.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: MEMORY & STATS ANALYTICS -->
+            <section id="tab-analytics" class="tab-page">
+                <header class="page-header">
+                    <div>
+                        <h1><i class="fa-solid fa-chart-pie"></i> Student Memory & Progress Dashboard</h1>
+                        <p>Track your topic mastery, active mistake bank, and learning statistics over time.</p>
+                    </div>
+                </header>
+
+                <!-- Top Metric Cards -->
+                <div class="metrics-grid">
+                    <div class="glass-card metric-card">
+                        <div class="metric-icon purple"><i class="fa-solid fa-book-bookmark"></i></div>
+                        <div class="metric-info">
+                            <h3 id="stat-docs">0</h3>
+                            <span>Indexed Materials</span>
+                        </div>
+                    </div>
+                    <div class="glass-card metric-card">
+                        <div class="metric-icon blue"><i class="fa-solid fa-circle-check"></i></div>
+                        <div class="metric-info">
+                            <h3 id="stat-quizzes">0</h3>
+                            <span>Quizzes Attempted</span>
+                        </div>
+                    </div>
+                    <div class="glass-card metric-card">
+                        <div class="metric-icon green"><i class="fa-solid fa-trophy"></i></div>
+                        <div class="metric-info">
+                            <h3 id="stat-score">0%</h3>
+                            <span>Average Score</span>
+                        </div>
+                    </div>
+                    <div class="glass-card metric-card">
+                        <div class="metric-icon red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <div class="metric-info">
+                            <h3 id="stat-mistakes">0</h3>
+                            <span>Active Mistakes Logged</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analytics-layout">
+                    <!-- Topic Mastery Progress -->
+                    <div class="glass-card mastery-card">
+                        <h3><i class="fa-solid fa-bars-progress"></i> Topic Mastery Levels</h3>
+                        <div id="topic-mastery-list" class="mastery-list">
+                            <p class="empty-msg">Take quizzes to build your topic mastery profile.</p>
+                        </div>
+                    </div>
+
+                    <!-- Mistakes Bank Review -->
+                    <div class="glass-card mistakes-card">
+                        <h3><i class="fa-solid fa-box-archive"></i> Mistakes Bank (Memory Tracking)</h3>
+                        <div id="mistakes-list" class="mistakes-list">
+                            <p class="empty-msg">No missed questions yet! Great job.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Audio Player Toast -->
+    <div id="audio-toast" class="audio-toast">
+        <div class="toast-content">
+            <i class="fa-solid fa-volume-high toast-icon"></i>
+            <span id="audio-toast-title">Playing Audio Explanation...</span>
+        </div>
+        <audio id="global-audio-player" controls autoplay></audio>
+        <button id="close-toast-btn" class="toast-close">&times;</button>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
